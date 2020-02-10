@@ -159,6 +159,7 @@ namespace external {
 namespace common {
 
 namespace {
+    const int kDefaultCameraIdOffset = 100;
     const int kDefaultJpegBufSize = 5 << 20; // 5MB
     const int kDefaultNumVideoBuffer = 4;
     const int kDefaultNumStillBuffer = 2;
@@ -192,6 +193,11 @@ ExternalCameraConfig ExternalCameraConfig::loadFromCfg(const char* cfgPath) {
     if (providerCfg == nullptr) {
         ALOGI("%s: no external camera provider config specified", __FUNCTION__);
         return ret;
+    }
+
+    XMLElement *cameraIdOffset = providerCfg->FirstChildElement("CameraIdOffset");
+    if (cameraIdOffset != nullptr) {
+        ret.cameraIdOffset = std::atoi(cameraIdOffset->GetText());
     }
 
     XMLElement *ignore = providerCfg->FirstChildElement("ignore");
@@ -330,6 +336,7 @@ bool ExternalCameraConfig::updateFpsList(tinyxml2::XMLElement* fpsList,
 }
 
 ExternalCameraConfig::ExternalCameraConfig() :
+        cameraIdOffset(kDefaultCameraIdOffset),
         maxJpegBufSize(kDefaultJpegBufSize),
         numVideoBuffers(kDefaultNumVideoBuffer),
         numStillBuffers(kDefaultNumStillBuffer),
